@@ -1,39 +1,362 @@
-<!doctype html><html lang="vi"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gánh Hàng Phố — Gameplay Render</title>
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Gánh Hàng Phố V4</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#222;font-family:system-ui;color:#2b2119}#app{max-width:430px;min-height:100vh;margin:auto;background:#f7ead2}.top{display:flex;gap:5px;padding:8px;background:#fff5e3;position:sticky;top:0;z-index:3}.s{flex:1;padding:6px 4px;background:white;border:1px solid #dfc9a8;border-radius:10px;text-align:center;font-size:11px;font-weight:800}.scene{height:320px;position:relative;background:linear-gradient(#a9dcef 0 52%,#777 52%);overflow:hidden}.sun{position:absolute;right:25px;top:20px;font-size:35px}.house{position:absolute;bottom:130px;width:100%;height:100px;background:#e5ad75;border-top:5px solid #83583d;padding:18px;font-weight:900}.tree{position:absolute;bottom:112px;font-size:48px}.t1{left:5px}.t2{right:5px}.cart{position:absolute;left:50%;bottom:55px;transform:translateX(-50%);width:205px;height:100px;background:#c77b38;border:5px solid #633918;border-radius:14px}.sign{position:absolute;left:20px;right:20px;top:-42px;background:#ffe39b;border:4px solid #633918;border-radius:10px;text-align:center;padding:5px;font-weight:900}.person{position:absolute;right:18px;bottom:110px;font-size:68px;display:none}.bubble{position:absolute;right:7px;top:15px;background:#fff;border:2px solid #333;border-radius:12px;padding:8px;max-width:205px;font-size:12px;font-weight:700;display:none}.panel{padding:10px;border-top:1px solid #dec5a0}.hidden{display:none}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.btn{border:1px solid #d8c09e;background:#fff;border-radius:11px;padding:10px;font-weight:800}.primary{background:#e7953e;color:#fff}.row{display:flex;gap:7px;overflow:auto}.card{background:#fff;border:1px solid #ddc7a7;border-radius:12px;padding:9px;margin:7px 0}.ings{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.ing{padding:6px;border:1px solid #d8c09e;background:#fff;border-radius:10px;font-size:10px;font-weight:800}.ing b{display:block;font-size:23px}.tag{display:inline-block;background:#f0dbb7;border-radius:8px;padding:5px;margin:2px;font-size:11px}
+:root{
+ --bg:#f7edd7;--paper:#fffaf0;--ink:#35261b;--brown:#70401f;--wood:#b96e31;
+ --gold:#e6a24b;--green:#5d8a4b;--blue:#4f88d8;--red:#bd4c3e;--line:#dfc9a5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#171717;font-family:ui-rounded,"Arial Rounded MT Bold",system-ui,sans-serif;color:var(--ink)}
+button{font:inherit;color:inherit;border:0;cursor:pointer}
+#app{max-width:760px;min-height:100vh;margin:auto;background:var(--bg);overflow:hidden}
+.hud{position:sticky;top:0;z-index:20;display:grid;grid-template-columns:1.2fr .8fr .8fr 1fr;gap:6px;padding:9px 8px;background:#fff8e9;border-bottom:2px solid var(--line)}
+.stat{background:#fff;border:2px solid #e6d3b5;border-radius:15px;padding:8px 7px;text-align:center;font-weight:900;font-size:13px;white-space:nowrap}
+.screen{padding:10px 10px 28px}.hidden{display:none!important}
+h1,h2,h3{margin:5px 0 12px}.title{font-size:25px}.muted{color:#786957}
+.card{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:12px;margin:8px 0;box-shadow:0 2px 0 #e7d2b0}
+.btn{width:100%;padding:13px 12px;border-radius:14px;background:#fff;border:2px solid var(--line);font-weight:900;font-size:16px}
+.btn.primary{background:#e5a04b;border-color:#c67b2d;color:#3d2513}
+.btn.blue{color:#2774d5}.btn.green{background:#dcebd2;color:#416535}.btn.red{color:#a7352d}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.back{margin-bottom:8px;background:transparent;text-align:left;font-weight:900;color:#3678ce}
+.street{height:340px;border-radius:20px;overflow:hidden;position:relative;border:3px solid #70401f;
+background:linear-gradient(#9ed9ef 0 42%,#eab176 42% 57%,#777 57% 100%)}
+.street:before{content:"";position:absolute;left:0;right:0;bottom:92px;height:5px;background:#68401f}
+.sun{position:absolute;right:25px;top:25px;width:54px;height:54px;border-radius:50%;background:#ffd875;box-shadow:0 0 0 8px #fff1a0aa}
+.tree{position:absolute;bottom:95px;width:58px;height:95px}.tree:before{content:"";position:absolute;bottom:0;left:25px;width:9px;height:48px;background:#70401f;border-radius:5px}.tree:after{content:"";position:absolute;top:0;left:0;width:58px;height:58px;border-radius:50%;background:#4d8b4c;box-shadow:12px 14px 0 #5b9a52,-10px 18px 0 #5b9a52}
+.tree.t1{left:18px}.tree.t2{right:15px}.lamp{position:absolute;right:105px;bottom:95px;width:5px;height:110px;background:#5a4639}.lamp:before{content:"";position:absolute;top:-8px;left:-10px;width:25px;height:18px;border-radius:50%;background:#ffe7a4}
+.street-label{position:absolute;left:14px;top:18px;font-size:20px;font-weight:1000;color:#4a2b18}
+.cart{position:absolute;left:50%;bottom:76px;transform:translateX(-50%);width:255px;height:125px;background:#b86d30;border:7px solid #6c3c1d;border-radius:18px 18px 12px 12px;box-shadow:0 10px 0 #5c5c5c}
+.cart:before{content:"GÁNH HÀNG PHỐ";position:absolute;left:50%;top:-57px;transform:translateX(-50%);width:190px;padding:12px 8px;background:#ffe2a4;border:5px solid #70401f;border-radius:14px;text-align:center;font-size:19px;font-weight:1000}
+.cart:after{content:"";position:absolute;bottom:-30px;left:20px;width:32px;height:32px;border-radius:50%;background:#292929;box-shadow:170px 0 0 #292929}
+.customer{position:absolute;right:16px;bottom:80px;width:92px;text-align:center;font-weight:900}.avatar{width:76px;height:92px;margin:auto;background:#f2bd82;border:5px solid #4d2d1c;border-radius:42px 42px 28px 28px;position:relative}.avatar:before{content:"";position:absolute;top:10px;left:10px;width:48px;height:27px;background:#2c251f;border-radius:30px 30px 10px 10px}.avatar:after{content:"•  •";position:absolute;top:38px;left:13px;letter-spacing:9px;font-size:17px}.bubble{position:absolute;right:80px;bottom:160px;background:#fff;border:3px solid #513522;border-radius:18px;padding:10px 12px;width:220px;font-size:14px;font-weight:900;z-index:3}.bubble:after{content:"";position:absolute;right:-14px;bottom:12px;border-width:8px 0 8px 14px;border-style:solid;border-color:transparent transparent transparent #513522}
+.order{background:#fff;border:2px solid var(--line);border-radius:16px;padding:10px;margin:8px 0}.recipe{display:flex;gap:5px;flex-wrap:wrap}.tag{background:#f1dfbd;border-radius:10px;padding:6px 8px;font-size:12px;font-weight:900}
+.kitchen{background:#f4e5c9;border:3px solid #9c7046;border-radius:20px;padding:10px}
+.worktop{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.station{min-height:145px;background:#c99054;border:4px solid #70401f;border-radius:15px;padding:8px;position:relative;overflow:hidden}
+.station h3{font-size:15px;margin:0 0 5px}.board{height:90px;background:#c68b4f;border:4px solid #815027;border-radius:10px;position:relative;box-shadow:inset 0 0 0 3px #dca66a}
+.plate{height:90px;background:#fffdf6;border:4px solid #b7a48c;border-radius:50%;position:relative}
+.ingredient-stack{display:flex;flex-wrap:wrap;gap:4px;position:absolute;left:7px;right:7px;bottom:6px}.mini{width:33px;height:33px;border-radius:8px;background:#fff;border:2px solid #d5b88e;display:flex;align-items:center;justify-content:center;overflow:hidden}.mini svg{width:28px;height:28px}
+.ingredient-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px}.ing{background:#fff;border:2px solid #ddc9aa;border-radius:13px;padding:6px 3px;min-height:72px;font-size:11px;font-weight:1000;text-align:center}.ing:active{transform:scale(.96);background:#fff1d4}.ing svg{width:42px;height:38px;display:block;margin:auto}.ing.disabled{opacity:.35}
+.progress{height:10px;background:#ddcfbb;border-radius:10px;overflow:hidden;margin:8px 0}.progress>i{display:block;height:100%;background:#5d8a4b;width:0}
+.result-food{position:absolute;inset:18px;display:flex;align-items:center;justify-content:center;flex-direction:column;font-weight:1000;text-align:center}.result-food svg{width:75px;height:60px}
+.actions{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:7px;margin-top:8px}.actions .btn{font-size:13px;padding:12px 5px}
+.section-title{font-size:18px;font-weight:1000;margin:14px 0 7px}
+.list-row{display:grid;grid-template-columns:1fr auto auto;gap:7px;align-items:center;padding:10px 0;border-bottom:1px solid #e5d5bb}.price{font-weight:1000;color:#9b5a18}.qty{display:flex;align-items:center;gap:5px}.qty button{width:30px;height:30px;border-radius:9px;background:#ead5b5;font-weight:1000}.pill{display:inline-block;background:#ead5b5;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:900}
+.modal{position:fixed;inset:0;background:#0008;z-index:100;display:flex;align-items:flex-end;justify-content:center}.modalbox{width:min(740px,100%);background:#fff8e9;border-radius:25px 25px 0 0;padding:18px;max-height:88vh;overflow:auto;border-top:4px solid #c28a4e}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice .btn{font-size:14px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:200;background:#33251d;color:white;padding:10px 15px;border-radius:14px;font-weight:900;box-shadow:0 5px 20px #0005}
+.small{font-size:12px}.good{color:#4b7b39}.bad{color:#b73c32}.money{font-size:22px;font-weight:1000}
+.asset-card{background:#fff;border:2px solid var(--line);border-radius:15px;padding:11px;margin:8px 0}.asset-card b{font-size:17px}.asset-card .meta{font-size:12px;color:#6f6253;margin:4px 0 8px}
+@media(min-width:700px){.ingredient-grid{grid-template-columns:repeat(7,1fr)}}
 </style>
-<div id="app">
-<div class="top"><div class="s">💰 <span id="money">10.000.000</span>đ</div><div class="s">⭐ <span id="rep">50</span></div><div class="s">📅 <span id="day">1</span></div><div class="s">🕐 <span id="time">07:00</span></div></div>
-<div id="world" class="scene hidden"><div class="sun">☀️</div><div class="house">PHỐ NHỎ</div><div class="tree t1">🌳</div><div class="tree t2">🌳</div><div class="cart"><div class="sign">🥖 GÁNH HÀNG PHỐ</div></div><div id="person" class="person">🧑🏻</div><div id="bubble" class="bubble"></div></div>
-<div id="home" class="panel"><h3>🏠 Nhà</h3><div class="grid"><button class="btn primary" onclick="locations()">🚚 Đi bán hàng</button><button class="btn" onclick="market()">🛒 Đi chợ</button><button class="btn" onclick="stock()">📦 Kho hàng</button><button class="btn" onclick="rest()">🛌 Nghỉ ngơi</button><button class="btn" onclick="assets()">🏪 Tài sản</button><button class="btn" onclick="ledger()">📒 Công nợ</button></div></div>
-<div id="locs" class="panel hidden"><h3>📍 Chọn địa điểm</h3><div class="row"><button class="btn" onclick="loc('Hẻm dân cư')">🏘️ Hẻm dân cư</button><button class="btn" onclick="loc('Văn phòng')">🏢 Văn phòng</button><button class="btn" onclick="loc('Trường học')">🏫 Trường học</button><button class="btn" onclick="loc('Khu chợ')">🛒 Khu chợ</button><button class="btn" onclick="loc('Công viên')">🌳 Công viên</button><button class="btn" onclick="loc('Phố đêm')">🌙 Phố đêm</button></div></div>
-<div id="groups" class="panel hidden"><h3>🍜 Chọn nhóm món</h3><div class="row"><button class="btn" onclick="start('bread')">🥖 Bánh mì</button><button class="btn" onclick="start('xoi')">🍚 Xôi</button><button class="btn" onclick="start('coffee')">☕ Cà phê</button><button class="btn" onclick="start('noodle')">🍜 Hủ tiếu</button></div></div>
-<div id="sell" class="panel hidden"><div class="card">📍 <b id="where"></b> · <b id="group"></b><div id="order" style="margin-top:7px"></div></div><div class="card"><b>🧑‍🍳 Bàn chế biến</b><div id="prep" style="min-height:38px;margin-top:7px">Chưa có nguyên liệu</div><div id="ings" class="ings" style="margin-top:8px"></div><div class="row" style="margin-top:8px"><button class="btn" onclick="resetDish()">↩️ Làm lại</button><button id="serve" class="btn primary" disabled onclick="serve()">🍽️ Phục vụ</button><button class="btn" onclick="home()">🏠 Về nhà</button></div></div><div id="msg"></div></div>
-<div id="extra" class="panel hidden"></div>
+</head>
+<body>
+<div id="app"></div>
+<div id="modal"></div>
 <script>
-const I={bread:[['bread','🥖','Bánh mì'],['meat','🥩','Thịt nguội'],['pate','🟤','Pate'],['egg','🥚','Trứng'],['sausage','🌭','Xúc xích'],['chicken','🍗','Gà xé'],['beef','🥩','Bò nướng'],['fish','🐟','Chả cá'],['pork','🍖','Heo quay'],['pickle','🥒','Đồ chua'],['cucumber','🥒','Dưa leo'],['herb','🌿','Rau thơm'],['chili','🌶️','Ớt'],['hot','🌶️','Tương ớt'],['mayo','🥣','Mayonnaise'],['onion','🧅','Hành phi']],xoi:[['sticky','🍚','Nếp'],['bean','🫘','Đậu xanh'],['black','🫘','Đậu đen'],['coconut','🥥','Cốt dừa'],['sugar','🍬','Đường'],['oil','🫗','Dầu'],['egg','🥚','Trứng'],['chicken','🍗','Gà xé'],['pork','🍖','Thịt kho'],['sausage','🌭','Lạp xưởng'],['onion','🧅','Hành phi']],coffee:[['coffee','☕','Cà phê'],['sugar','🍬','Đường'],['cond','🥛','Sữa đặc'],['milk','🥛','Sữa tươi'],['ice','🧊','Đá'],['salt','🧂','Kem muối'],['coconut','🥥','Cốt dừa'],['egg','🥚','Trứng'],['cocoa','🍫','Cacao']],noodle:[['noodle','🍜','Hủ tiếu'],['meat','🥩','Thịt'],['shrimp','🦐','Tôm'],['egg','🥚','Trứng cút'],['liver','🥩','Gan'],['greens','🥬','Rau'],['bone','🦴','Xương'],['beefball','🟤','Bò viên'],['onion','🧅','Hành'],['satay','🌶️','Sa tế'],['peanut','🥜','Đậu phộng'],['squid','🦑','Mực'],['fish','🐟','Cá']]};
-const R={bread:[['Bánh mì thịt nguội',['bread','meat','pickle','cucumber','herb']],['Bánh mì trứng ốp la + xúc xích',['bread','egg','sausage','pickle']],['Bánh mì gà xé',['bread','chicken','pickle','cucumber','herb']],['Bánh mì chả cá',['bread','fish','pickle','cucumber','herb']],['Bánh mì heo quay',['bread','pork','pickle','cucumber']],['Bánh mì thịt nướng + trứng',['bread','beef','egg','pickle','herb']]],xoi:[['Xôi đậu xanh',['sticky','bean','coconut','sugar']],['Xôi gà',['sticky','chicken','onion']],['Xôi thịt kho',['sticky','pork','egg','onion']]],coffee:[['Cà phê đen',['coffee','sugar','ice']],['Cà phê sữa',['coffee','cond','ice']],['Bạc xỉu',['coffee','cond','milk','ice']],['Cà phê trứng',['coffee','egg','milk','sugar']]],noodle:[['Hủ tiếu Nam Vang',['noodle','meat','shrimp','egg','liver','greens']],['Hủ tiếu thịt',['noodle','meat','greens','onion']],['Hủ tiếu bò viên',['noodle','beefball','greens','onion']]]};
-let S={money:10000000,rep:50,day:1,min:420,loc:'',g:'',recipe:null,chosen:[],customer:false};
-const all=Object.fromEntries(Object.values(I).flat().map(x=>[x[0],x]));
-function stats(){money.textContent=S.money.toLocaleString('vi-VN');rep.textContent=S.rep;day.textContent=S.day;time.textContent=String(Math.floor(S.min/60)).padStart(2,'0')+':'+String(S.min%60).padStart(2,'0')}
-setInterval(()=>{S.min++;if(S.min>=1440){S.min=360;S.day++}stats()},1000);
-function hide(){['home','locs','groups','sell','extra','world'].forEach(x=>document.getElementById(x).classList.add('hidden'))}
-function locations(){hide();locs.classList.remove('hidden')}
-function loc(x){S.loc=x;hide();groups.classList.remove('hidden')}
-function start(g){S.g=g;S.chosen=[];hide();world.classList.remove('hidden');sell.classList.remove('hidden');where.textContent=S.loc;group.textContent={bread:'🥖 Bánh mì',xoi:'🍚 Xôi',coffee:'☕ Cà phê',noodle:'🍜 Hủ tiếu'}[g];renderI();customer()}
-function renderI(){ings.innerHTML='';I[S.g].forEach(x=>{let b=document.createElement('button');b.className='ing';b.innerHTML='<b>'+x[1]+'</b>'+x[2];b.onclick=()=>add(x[0]);ings.appendChild(b)})}
-function customer(){S.customer=true;person.style.display='block';bubble.style.display='block';S.recipe=R[S.g][Math.floor(Math.random()*R[S.g].length)];S.chosen=[];resetDish();bubble.textContent='Cho mình '+S.recipe[0]+' nhé!';order.innerHTML='<b>📋 Đơn:</b> '+S.recipe[0]+'<br><small>'+S.recipe[1].map(k=>all[k][2]).join(' → ')+'</small>'}
-function add(k){let need=S.recipe[1],p=S.chosen.length;if(k!==need[p]){S.rep=Math.max(0,S.rep-2);msg.textContent='❌ Sai nguyên liệu — món bị hỏng, làm lại.';resetDish();return}S.chosen.push(k);prep.innerHTML=S.chosen.map(x=>'<span class="tag">'+all[x][1]+' '+all[x][2]+'</span>').join('');if(S.chosen.length===need.length){serve.disabled=false;msg.textContent='✅ Đúng công thức!'}else msg.textContent='Đúng rồi, tiếp tục.'}
-function resetDish(){S.chosen=[];prep.textContent='Chưa có nguyên liệu';serve.disabled=true}
-function serve(){if(S.chosen.length!==S.recipe[1].length)return;let p=35000+S.chosen.length*5000;S.money+=p;S.rep=Math.min(100,S.rep+1);S.customer=false;person.style.display='none';bubble.style.display='none';serve.disabled=true;msg.textContent='💰 +'+p.toLocaleString('vi-VN')+'đ. Khách rời đi.';stats();setTimeout(()=>{if(!S.customer&&!sell.classList.contains('hidden'))customer()},3000)}
-function home(){hide();homeEl=document.getElementById('home');homeEl.classList.remove('hidden');S.customer=false;person.style.display='none';bubble.style.display='none'}
-function market(){hide();extra.classList.remove('hidden');extra.innerHTML='<h3>🛒 Đi chợ</h3><p>Chọn nhóm để chỉ xem nguyên liệu của nhóm đó.</p><div class="row"><button class="btn" onclick="marketG(\'bread\')">🥖 Bánh mì</button><button class="btn" onclick="marketG(\'xoi\')">🍚 Xôi</button><button class="btn" onclick="marketG(\'coffee\')">☕ Cà phê</button><button class="btn" onclick="marketG(\'noodle\')">🍜 Hủ tiếu</button></div><div id="mi"></div><button class="btn" onclick="home()">🏠 Về nhà</button>'}
-function marketG(g){mi.innerHTML='<h3>Nguyên liệu '+({bread:'Bánh mì',xoi:'Xôi',coffee:'Cà phê',noodle:'Hủ tiếu'}[g])+'</h3>';I[g].forEach(x=>mi.innerHTML+='<div class="card"><b>'+x[1]+' '+x[2]+'</b><br>Giá hôm nay: 2.000đ <button class="btn" onclick="buy(\''+x[0]+'\')">Mua 1</button></div>')}
-function buy(k){if(S.money<2000){alert('Không đủ tiền');return}S.money-=2000;S.stock=S.stock||{};S.stock[k]=(S.stock[k]||0)+1;stats()}
-function stock(){hide();extra.classList.remove('hidden');extra.innerHTML='<h3>📦 Kho hàng</h3>'+(Object.entries(S.stock||{}).map(([k,v])=>'<div class="card">'+all[k][1]+' '+all[k][2]+' × '+v+'</div>').join('')||'<div class="card">Kho đang trống.</div>')+'<button class="btn" onclick="home()">🏠 Về nhà</button>'}
-function assets(){hide();extra.classList.remove('hidden');extra.innerHTML='<h3>🏪 Tài sản</h3><div class="card">🛒 Xe gỗ cơ bản — Cấp 1</div><button class="btn" onclick="home()">🏠 Về nhà</button>'}
-function ledger(){hide();extra.classList.remove('hidden');extra.innerHTML='<h3>📒 Sổ công nợ</h3><div class="card">Chưa có công nợ.</div><button class="btn" onclick="home()">🏠 Về nhà</button>'}
-function rest(){S.min=S.min<630?630:S.min<870?870:S.min<1110?1110:360;if(S.min===360)S.day++;stats();home()}
-stats();
-</script></html>
+const moneyFmt=n=>new Intl.NumberFormat('vi-VN').format(Math.round(n))+'đ';
+const groups={
+ bread:{name:'Bánh mì',icon:'bread'},
+ xoi:{name:'Xôi',icon:'rice'},
+ coffee:{name:'Cà phê',icon:'coffee'},
+ hutieu:{name:'Hủ tiếu',icon:'noodle'}
+};
+const recipes={
+ bread:[
+ ['Bánh mì thịt nguội',['bread','coldmeat','pickle','cucumber','herb']],
+ ['Bánh mì xíu mại',['bread','xiumai','pickle','cucumber','herb']],
+ ['Bánh mì chả lụa',['bread','porkroll','pickle','cucumber','herb']],
+ ['Bánh mì chả cá',['bread','fishcake','pickle','cucumber','herb']],
+ ['Bánh mì cá hộp',['bread','cannedfish','pickle','cucumber','herb']],
+ ['Bánh mì gà xé',['bread','shreddedchicken','pickle','cucumber','herb']],
+ ['Bánh mì gà nướng',['bread','grilledchicken','pickle','cucumber','herb']],
+ ['Bánh mì heo quay',['bread','roastpork','pickle','cucumber','herb']],
+ ['Bánh mì bò né',['bread','beefsteak','egg','pickle','cucumber']],
+ ['Bánh mì bò nướng',['bread','grilledbeef','pickle','cucumber','herb']],
+ ['Bánh mì nem nướng',['bread','nemnuong','pickle','cucumber','herb']],
+ ['Bánh mì xá xíu',['bread','charsiu','pickle','cucumber','herb']],
+ ['Bánh mì sườn nướng',['bread','grilledribs','pickle','cucumber','herb']],
+ ['Bánh mì thịt nguội + pate',['bread','coldmeat','pate','pickle','cucumber']],
+ ['Bánh mì trứng ốp la + xúc xích',['bread','egg','sausage','pickle','cucumber']],
+ ['Bánh mì thịt bằm',['bread','mincedpork','pickle','cucumber','herb']],
+ ['Bánh mì thịt kho',['bread','braisedpork','pickle','cucumber','herb']],
+ ['Bánh mì chả cá + trứng',['bread','fishcake','egg','pickle','cucumber']],
+ ['Bánh mì thịt nướng + trứng',['bread','grilledmeat','egg','pickle','cucumber']]
+ ],
+ xoi:[
+ ['Xôi đậu xanh',['rice','mungbean','coconut','sugar','salt']],
+ ['Xôi đậu đen',['rice','blackbean','sugar','coconut']],
+ ['Xôi lá dứa',['rice','pandan','coconut','sugar']],
+ ['Xôi vò',['rice','mungbean','friedonion','oil']],
+ ['Xôi gấc',['rice','gac','sugar','oil']],
+ ['Xôi bắp',['rice','corn','mungbean','friedonion']],
+ ['Xôi mặn',['rice','porkfloss','chineseSausage','porkroll','egg','friedonion']],
+ ['Xôi gà',['rice','shreddedchicken','friedonion','sauce']],
+ ['Xôi thịt kho',['rice','braisedpork','egg','friedonion']],
+ ['Xôi xá xíu',['rice','charsiu','friedonion','sauce']],
+ ['Xôi xúc xích',['rice','sausage','porkfloss','friedonion']],
+ ['Xôi trứng',['rice','egg','porkfloss','friedonion']],
+ ['Xôi lạp xưởng',['rice','chineseSausage','friedonion','sauce']]
+ ],
+ coffee:[
+ ['Cà phê đen',['coffee','sugar','ice']],
+ ['Cà phê sữa',['coffee','condensedmilk','ice']],
+ ['Bạc xỉu',['coffee','condensedmilk','freshmilk','ice']],
+ ['Cà phê sữa tươi',['coffee','freshmilk','ice']],
+ ['Cà phê muối',['coffee','saltcream','freshmilk']],
+ ['Cà phê dừa',['coffee','coconutmilk','freshmilk','ice']],
+ ['Cà phê trứng',['coffee','egg','freshmilk','sugar']],
+ ['Cà phê cacao',['coffee','cacao','freshmilk','sugar']],
+ ['Cà phê đá xay',['coffee','freshmilk','iceblend','sugar']]
+ ],
+ hutieu:[
+ ['Hủ tiếu Nam Vang',['noodle','mincedpork','shrimp','quail','liver','greens']],
+ ['Hủ tiếu thịt',['noodle','pork','greens','scallion']],
+ ['Hủ tiếu xương',['noodle','porkbone','pork','greens']],
+ ['Hủ tiếu bò viên',['noodle','beefball','greens','scallion']],
+ ['Hủ tiếu gà',['noodle','shreddedchicken','greens','scallion']],
+ ['Hủ tiếu sa tế',['noodle','beef','satay','peanut','greens']],
+ ['Hủ tiếu khô',['noodle','pork','shrimp','quail','drySauce']],
+ ['Hủ tiếu xào',['noodle','pork','shrimp','greens','egg']],
+ ['Hủ tiếu mực',['noodle','squid','shrimp','greens']],
+ ['Hủ tiếu hải sản',['noodle','shrimp','squid','fish','greens']]
+ ]
+};
+const ingredientInfo={
+ bread:['Bánh mì','bread'],coldmeat:['Thịt nguội','meat'],xiumai:['Xíu mại','meat'],porkroll:['Chả lụa','meat'],fishcake:['Chả cá','meat'],cannedfish:['Cá hộp','fish'],shreddedchicken:['Gà xé','meat'],grilledchicken:['Gà nướng','meat'],roastpork:['Heo quay','meat'],beefsteak:['Bò né','meat'],grilledbeef:['Bò nướng','meat'],nemnuong:['Nem nướng','meat'],charsiu:['Xá xíu','meat'],grilledribs:['Sườn nướng','meat'],pate:['Pate','sauce'],egg:['Trứng','egg'],sausage:['Xúc xích','meat'],mincedpork:['Thịt bằm','meat'],braisedpork:['Thịt kho','meat'],grilledmeat:['Thịt nướng','meat'],pickle:['Đồ chua','veg'],cucumber:['Dưa leo','veg'],herb:['Rau thơm','veg'],chili:['Ớt','veg'],chilisauce:['Tương ớt','sauce'],darkSauce:['Nước tương','sauce'],mayo:['Mayonnaise','sauce'],friedonion:['Hành phi','veg'],
+ rice:['Nếp','grain'],mungbean:['Đậu xanh','bean'],blackbean:['Đậu đen','bean'],coconut:['Cốt dừa','dairy'],sugar:['Đường','sugar'],salt:['Muối','salt'],oil:['Dầu','sauce'],pandan:['Lá dứa','veg'],gac:['Gấc','fruit'],corn:['Bắp','veg'],porkfloss:['Chà bông','meat'],chineseSausage:['Lạp xưởng','meat'],sauce:['Nước sốt','sauce'],
+ coffee:['Cà phê','coffee'],condensedmilk:['Sữa đặc','dairy'],ice:['Đá','ice'],freshmilk:['Sữa tươi','dairy'],saltcream:['Kem muối','dairy'],coconutmilk:['Sữa dừa','dairy'],cacao:['Cacao','powder'],iceblend:['Đá xay','ice'],
+ noodle:['Hủ tiếu','noodle'],mincedpork:['Thịt bằm','meat'],shrimp:['Tôm','seafood'],quail:['Trứng cút','egg'],liver:['Gan','meat'],greens:['Rau','veg'],pork:['Thịt heo','meat'],scallion:['Hành','veg'],porkbone:['Xương heo','bone'],beefball:['Bò viên','meat'],beef:['Thịt bò','meat'],satay:['Sa tế','sauce'],peanut:['Đậu phộng','bean'],drySauce:['Sốt khô','sauce'],squid:['Mực','seafood'],fish:['Cá','fish']
+};
+const prices={bread:1500,coldmeat:5000,xiumai:4500,porkroll:4500,fishcake:5000,cannedfish:6500,shreddedchicken:5000,grilledchicken:6000,roastpork:7000,beefsteak:9000,grilledbeef:7500,nemnuong:6000,charsiu:7000,grilledribs:8000,pate:2500,egg:2500,sausage:3500,mincedpork:5000,braisedpork:5500,grilledmeat:6500,pickle:1000,cucumber:800,herb:800,chili:500,chilisauce:700,darkSauce:600,mayo:1000,friedonion:1000,rice:2500,mungbean:3000,blackbean:3000,coconut:2500,sugar:1200,salt:500,oil:1200,pandan:800,gac:2500,corn:1800,porkfloss:4500,chineseSausage:5500,sauce:900,coffee:3500,condensedmilk:2500,ice:500,freshmilk:2500,saltcream:2500,coconutmilk:2500,cacao:1800,iceblend:1000,noodle:3000,shrimp:7000,quail:1500,liver:4500,greens:1000,pork:5000,scallion:700,porkbone:3500,beefball:4500,beef:6500,satay:1200,peanut:1500,drySauce:900,squid:7000,fish:5500};
+const groupIngredients={
+ bread:['bread','coldmeat','xiumai','porkroll','fishcake','cannedfish','shreddedchicken','grilledchicken','roastpork','beefsteak','grilledbeef','nemnuong','charsiu','grilledribs','pate','egg','sausage','mincedpork','braisedpork','grilledmeat','pickle','cucumber','herb','chili','chilisauce','darkSauce','mayo','friedonion'],
+ xoi:['rice','mungbean','blackbean','coconut','sugar','salt','oil','pandan','gac','corn','porkfloss','chineseSausage','porkroll','egg','shreddedchicken','braisedpork','charsiu','sausage','friedonion','sauce'],
+ coffee:['coffee','sugar','condensedmilk','ice','freshmilk','saltcream','coconutmilk','egg','cacao','iceblend'],
+ hutieu:['noodle','mincedpork','shrimp','quail','liver','greens','pork','scallion','porkbone','beefball','shreddedchicken','beef','satay','peanut','drySauce','egg','squid','fish']
+};
+const locations=[['alley','🏘️','Hẻm dân cư','Gia đình, người lớn tuổi'],['office','🏢','Khu văn phòng','Nhân viên, shipper'],['school','🏫','Khu trường học','Học sinh, sinh viên'],['market','🛒','Khu chợ','Người mua bán'],['park','🌳','Công viên','Gia đình, người đi bộ'],['night','🌙','Phố đêm','Khách ăn khuya']];
+const groupsAllowed={
+ bread:[['06:00','10:30'],['10:30','14:30']],xoi:[['06:00','10:30']],coffee:[['06:00','10:30'],['10:30','14:30'],['14:30','18:30'],['18:30','22:00']],
+ hutieu:[['10:30','14:30'],['18:30','22:00']]
+};
+const state={
+ money:10000000,day:1,time:7*60,rating:44,served:0,combo:0,location:null,group:null,recipe:null,step:0,
+ inventory:{},ordersDebt:[],loans:[],assets:{cart:1,vehicle:0,property:0,passive:0},selectedMarket:{},revenue:0,ingredientCost:0,waste:0,expenses:0,
+ customer:null,nextCustomer:0,restCount:0,shiftRevenue:0,shiftServed:0,clockStarted:false
+};
+Object.keys(prices).forEach(k=>state.inventory[k]=8);
+const cartAssets=[
+ {n:'Xe gỗ cũ',cost:0,level:1,cap:20,speed:0},
+ {n:'Xe nhôm sáng',cost:8000000,level:2,cap:30,speed:1},
+ {n:'Xe inox',cost:18000000,level:3,cap:45,speed:2},
+ {n:'Xe hàng cao cấp',cost:40000000,level:4,cap:65,speed:3},
+ {n:'Quầy cố định',cost:90000000,level:5,cap:100,speed:4}
+];
+const vehicleAssets=[
+ {n:'Chưa có phương tiện',cost:0,bonus:0},{n:'Xe máy',cost:7000000,bonus:1},{n:'Xe máy nâng cấp',cost:14000000,bonus:2},{n:'Ô tô cũ',cost:35000000,bonus:3},{n:'Ô tô gia đình',cost:60000000,bonus:4},{n:'Xe tải nhỏ',cost:120000000,bonus:6}
+];
+const propertyAssets=[
+ {n:'Chưa có bất động sản',cost:0,passive:0},{n:'Phòng nhỏ',cost:12000000,passive:40000},{n:'Nhà thuê',cost:30000000,passive:90000},{n:'Mặt bằng kinh doanh',cost:65000000,passive:180000},{n:'Nhà cho thuê',cost:110000000,passive:300000},{n:'Cửa hàng',cost:180000000,passive:500000},{n:'Tòa nhà lớn',cost:350000000,passive:900000}
+];
+
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function minutes(){return state.time}
+function clock(){let h=Math.floor(state.time/60),m=state.time%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')}
+function phase(){let t=state.time;if(t<630)return '🌅 Sáng';if(t<870)return '☀️ Trưa';if(t<1110)return '🌆 Chiều';return '🌙 Tối'}
+function allowed(g){let h=state.time;return groupsAllowed[g].some(([a,b])=>{let [ah,am]=a.split(':').map(Number),[bh,bm]=b.split(':').map(Number);return h>=ah*60+am&&h<bh*60+bm})}
+function groupOptions(){return Object.entries(groups).filter(([g])=>allowed(g))}
+function toast(s){const d=document.createElement('div');d.className='toast';d.textContent=s;document.body.appendChild(d);setTimeout(()=>d.remove(),1800)}
+function money(n){return n<0?'-'+moneyFmt(-n):moneyFmt(n)}
+function svg(kind,key=''){
+ const colors={bread:'#d88b3d',meat:'#a94e3f',fish:'#6d9bc6',egg:'#fff4cf',veg:'#63a34f',sauce:'#c75a38',grain:'#eee1c5',bean:'#6f4b3d',dairy:'#fff1c7',coffee:'#5a3826',ice:'#cfeaf3',noodle:'#f3d79c',seafood:'#e78668',bone:'#e2d2bd',fruit:'#c94843',powder:'#8d5b42',sugar:'#f2e6dc',salt:'#eee'};
+ let c=colors[kind]||'#d9ad72';
+ if(key==='bread')return `<svg viewBox="0 0 80 50"><path d="M9 35C7 20 20 11 38 11s34 8 33 21c-1 8-9 10-31 10S10 43 9 35Z" fill="${c}" stroke="#6e3f20" stroke-width="4"/><path d="M25 24l4 5m10-8 4 5m10-4 4 5" stroke="#8b542b" stroke-width="4" stroke-linecap="round"/></svg>`;
+ if(kind==='egg')return `<svg viewBox="0 0 60 60"><path d="M30 8c12 0 21 14 21 27 0 12-9 20-21 20S9 47 9 35C9 22 18 8 30 8Z" fill="${c}" stroke="#705f49" stroke-width="3"/><circle cx="30" cy="36" r="8" fill="#e7a63f"/></svg>`;
+ if(kind==='veg')return `<svg viewBox="0 0 70 55"><path d="M36 48C28 31 31 18 46 10c2 14-2 25-10 38Z" fill="${c}" stroke="#3d6934" stroke-width="3"/><path d="M35 43C25 28 13 25 8 29c6 12 15 18 27 14Z" fill="#83b95d" stroke="#3d6934" stroke-width="3"/></svg>`;
+ if(kind==='meat'||kind==='fish'||kind==='seafood')return `<svg viewBox="0 0 75 55"><path d="M10 32C16 16 32 11 51 17c13 4 17 17 7 27-12 11-38 7-46-2-3-3-4-6-2-10Z" fill="${c}" stroke="#693c2c" stroke-width="4"/><circle cx="49" cy="29" r="5" fill="#f6d6b0"/><path d="M20 26h15m-12 9h17" stroke="#8b503b" stroke-width="3" stroke-linecap="round"/></svg>`;
+ if(kind==='grain'||kind==='bean')return `<svg viewBox="0 0 70 55"><path d="M11 34c2-13 13-23 25-23s22 10 23 23c0 9-10 15-24 15S10 43 11 34Z" fill="${c}" stroke="#766044" stroke-width="3"/><path d="M18 34c12-7 24-8 36-1" stroke="#b39a6f" stroke-width="3"/></svg>`;
+ if(kind==='dairy'||kind==='sugar'||kind==='salt'||kind==='powder')return `<svg viewBox="0 0 70 55"><path d="M20 9h30l5 38H15L20 9Z" fill="${c}" stroke="#765e4a" stroke-width="3"/><path d="M20 17h31" stroke="#b78c58" stroke-width="3"/><circle cx="35" cy="32" r="7" fill="#d6a05b"/></svg>`;
+ if(kind==='coffee')return `<svg viewBox="0 0 70 60"><path d="M16 18h38v25c0 8-8 12-19 12S16 51 16 43V18Z" fill="#efe1c9" stroke="#60442e" stroke-width="4"/><path d="M54 24h7c8 0 8 12 0 13h-7" fill="none" stroke="#60442e" stroke-width="4"/><path d="M25 11c-4-7 8-7 4-13m11 13c-4-7 8-7 4-13" stroke="#9a6b45" stroke-width="3" fill="none"/></svg>`;
+ if(kind==='ice')return `<svg viewBox="0 0 70 55"><path d="M12 38 21 13l28-5 10 26-28 10Z" fill="#cde9f2" stroke="#5f8c9b" stroke-width="3"/><path d="m21 13 10 20 28-9M31 33l-1 11" fill="none" stroke="#8fb8c4" stroke-width="3"/></svg>`;
+ if(kind==='noodle')return `<svg viewBox="0 0 75 55"><path d="M10 25h55v12c0 10-12 15-27 15S10 47 10 37V25Z" fill="#efe0bf" stroke="#6b5138" stroke-width="3"/><path d="M17 28c8 9 12-8 20 0s12-9 21 0" fill="none" stroke="#d39c58" stroke-width="4"/></svg>`;
+ if(kind==='sauce')return `<svg viewBox="0 0 70 55"><path d="M27 9h18l3 10H22l5-10Z" fill="#e9d1a8" stroke="#6c4b30" stroke-width="3"/><path d="M22 19h26l-3 29H25l-3-29Z" fill="${c}" stroke="#6c4b30" stroke-width="3"/></svg>`;
+ if(kind==='bone')return `<svg viewBox="0 0 75 55"><path d="M17 31c-7-5-12 5-6 10 5 4 9 1 13-3l25 1c4 4 8 7 13 3 6-5 1-15-6-10L44 30l12-10c7 5 12-5 6-10-5-4-9-1-13 3L24 12c-4-4-8-7-13-3-6 5-1 15 6 10l11 10-11 2Z" fill="${c}" stroke="#806a55" stroke-width="3"/></svg>`;
+ return `<svg viewBox="0 0 70 55"><circle cx="35" cy="28" r="20" fill="${c}" stroke="#6b5138" stroke-width="3"/><path d="M24 28h22M35 17v22" stroke="#fff7" stroke-width="3"/></svg>`;
+}
+function icon(k){let info=ingredientInfo[k]||[k,'veg'];return svg(info[1],k)}
+function allUsed(recipe){return recipe.every(k=>state.stepUsed.includes(k))}
+state.stepUsed=[];
+function recipeFor(g){let arr=recipes[g];return arr[Math.floor(Math.random()*arr.length)]}
+function orderPrice(g,r){return Math.round(r[1].reduce((s,k)=>s+(prices[k]||2000),0)*2.4+5000)}
+function renderHud(){return `<div class="hud"><div class="stat">💰 ${moneyFmt(state.money)}</div><div class="stat">⭐ ${state.rating}</div><div class="stat">📅 ${state.day}</div><div class="stat">🕐 ${clock()}</div></div>`}
+function render(){
+ const app=document.getElementById('app');
+ app.innerHTML=renderHud()+'<div id="screen" class="screen"></div>';
+ if(!state.scene)home(); else window[state.scene]();
+}
+function home(){
+ state.scene='home';
+ document.getElementById('screen').innerHTML=`
+ <h1 class="title">🏠 Nhà</h1>
+ <div class="card"><b>${phase()}</b> · Ngày ${state.day} · ${clock()}<br><span class="muted">Chỉ 🛌 Nghỉ ngơi mới chuyển ca/ngày.</span></div>
+ <div class="grid2">
+  <button class="btn primary" onclick="chooseLocation()">🚚 Đi bán hàng</button>
+  <button class="btn blue" onclick="market()">🛒 Đi chợ</button>
+  <button class="btn blue" onclick="inventory()">📦 Kho hàng</button>
+  <button class="btn" onclick="rest()">🛌 Nghỉ ngơi</button>
+  <button class="btn" onclick="assets()">🏪 Tài sản</button>
+  <button class="btn" onclick="ledger()">📒 Công nợ</button>
+  <button class="btn" onclick="loans()">💰 Vay vốn</button>
+  <button class="btn" onclick="business()">📈 Kinh doanh</button>
+ </div>
+ <div class="card"><b>Hôm nay</b><div class="small">Đã phục vụ: ${state.shiftServed} · Doanh thu: ${moneyFmt(state.shiftRevenue)} · Combo: x${state.combo}</div></div>`;
+}
+function chooseLocation(){
+ state.scene='location';
+ const el=document.getElementById('screen');
+ el.innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>📍 Chọn khu vực</h2>
+ <div class="grid2">${locations.map(x=>`<button class="btn" onclick="chooseGroup('${x[0]}')">${x[1]} <b>${x[2]}</b><br><span class="small muted">${x[3]}</span></button>`).join('')}</div>`;
+}
+function chooseGroup(loc){
+ state.location=loc; state.scene='groups'; const opts=groupOptions();
+ document.getElementById('screen').innerHTML=`<button class="back" onclick="chooseLocation()">← Đổi khu vực</button>
+ <h2>🍜 Chọn nhóm món</h2><div class="card"><b>${locations.find(x=>x[0]===loc)[1]} ${locations.find(x=>x[0]===loc)[2]}</b><br>${phase()} · Chọn món bạn muốn bán.</div>
+ <div class="grid2">${Object.entries(groups).map(([g,x])=>`<button class="btn ${allowed(g)?'primary':'disabled'}" ${allowed(g)?`onclick="startSelling('${g}')"`:'disabled'}>${x.icon==='bread'?'🥖':x.icon==='rice'?'🍚':x.icon==='coffee'?'☕':'🍜'} ${x.name}<br><span class="small">${allowed(g)?'Có thể bán lúc này':'Ngoài giờ bán'}</span></button>`).join('')}</div>`;
+}
+function startSelling(g){
+ if(!allowed(g)){toast('Nhóm món này chưa đúng giờ bán.');return}
+ state.group=g;state.recipe=recipeFor(g);state.step=0;state.stepUsed=[];state.customer=null;state.nextCustomer=Date.now()+1000;state.scene='sell';renderSell();
+}
+function renderSell(){
+ const s=document.getElementById('screen');const r=state.recipe;const active=state.customer;
+ const loc=locations.find(x=>x[0]===state.location);
+ const used=state.stepUsed||[];
+ const remain=r[1].slice(state.step);
+ const status=active?`👤 ${active.name} · ${active.mood}`:'⏳ Đang chờ khách...';
+ const bubble=active?`<div class="bubble">“${active.say}”<br><span class="small">${r[0]} · ${moneyFmt(active.price)}</span></div>`:'';
+ const buttons=groupIngredients[state.group].map(k=>{let info=ingredientInfo[k];let stock=state.inventory[k]||0;return `<button class="ing ${stock<=0?'disabled':''}" ${stock>0?`onclick="addIngredient('${k}')"`:'disabled'}>${icon(k)}${info[0]}<br><span class="small">Kho ${stock}</span></button>`}).join('');
+ s.innerHTML=`<button class="back" onclick="home()">← Về nhà (không đổi giờ)</button>
+ <div class="street"><div class="sun"></div><div class="street-label">${loc[1]} ${loc[2]}</div><div class="tree t1"></div><div class="tree t2"></div><div class="lamp"></div>
+ ${bubble}<div class="cart"></div><div class="customer"><div class="avatar"></div>${active?active.name:'...'}</div></div>
+ <div class="order"><b>📋 Đơn: ${r[0]}</b><div class="recipe">${r[1].map((k,i)=>`<span class="tag">${i<state.step?'✓ ':''}${ingredientInfo[k][0]}</span>`).join('')}</div>
+ <div class="progress"><i style="width:${Math.round(state.step/r[1].length*100)}%"></i></div><span class="small">${status}</span></div>
+ <div class="kitchen">
+  <div class="worktop">
+   <div class="station"><h3>🪵 THỚT SƠ CHẾ</h3><div class="board"><div class="ingredient-stack">${used.map(k=>`<div class="mini">${icon(k)}</div>`).join('')}</div></div></div>
+   <div class="station"><h3>${state.group==='coffee'?'☕ KHU PHA CHẾ':state.group==='hutieu'?'🍲 NỒI HỦ TIẾU':'🍳 BẾP / NỒI'}</h3><div class="plate"><div class="result-food">${state.step===r[1].length?icon(state.group==='bread'?'bread':r[1][0]):'<span class="muted small">Thành phẩm sẽ hiện ở đây</span>'}</div></div></div>
+  </div>
+  <div class="section-title">🥣 Nguyên liệu của ${groups[state.group].name}</div>
+  <div class="ingredient-grid">${buttons}</div>
+  <div class="actions"><button class="btn" onclick="resetDish()">↩ Làm lại</button><button class="btn primary" onclick="serve()">🍽️ Phục vụ</button><button class="btn" onclick="home()">🏠 Về nhà</button></div>
+  <div class="small muted" style="margin-top:7px">Bấm đúng thứ tự công thức. Bấm sai sẽ hủy món và hao nguyên liệu đã dùng.</div>
+ </div>`;
+}
+function addIngredient(k){
+ const r=state.recipe;
+ if(state.step>=r[1].length){toast('Món đã hoàn thành, hãy phục vụ.');return}
+ const need=r[1][state.step];
+ if(k!==need){
+  state.waste+=prices[k]||1000;state.inventory[k]=Math.max(0,state.inventory[k]-1);state.rating=Math.max(0,state.rating-1);
+  toast('Sai nguyên liệu! Món bị hỏng.');state.stepUsed=[];state.step=0;renderSell();return
+ }
+ state.inventory[k]--;state.ingredientCost+=prices[k]||0;state.stepUsed.push(k);state.step++;renderSell();
+}
+function resetDish(){state.waste+=state.stepUsed.reduce((s,k)=>s+(prices[k]||0),0);state.stepUsed=[];state.step=0;toast('Đã bỏ món đang làm.');renderSell()}
+function spawnCustomer(){
+ if(state.customer||state.scene!=='sell'||!allowed(state.group)||Date.now()<state.nextCustomer)return;
+ const names=['Cô Lan','Chú Minh','Bé An','Anh Nam','Chị Vy','Cô Hạnh','Bạn Linh','Anh shipper'];
+ const moods=['vui vẻ','thân thiện','hơi vội','dễ tính','khó tính'];
+ const say=['Ui thơm quá!','Nhìn ngon quá!','Cho nhiều rau nha!','Nhanh giúp mình với 😆','Hôm nay đông khách ghê.'];
+ state.customer={name:names[Math.floor(Math.random()*names.length)],mood:moods[Math.floor(Math.random()*moods.length)],say:say[Math.floor(Math.random()*say.length)],price:orderPrice(state.group,state.recipe)};
+ renderSell();
+}
+function serve(){
+ if(!state.customer){toast('Chưa có khách. Hãy chờ khách xuất hiện.');return}
+ if(state.step<state.recipe[1].length){toast('Món chưa hoàn thành!');return}
+ const p=state.customer.price;
+ if(Math.random()<.10){
+  const have=Math.floor(p*(.45+Math.random()*.25));
+  if(have<p){insufficient(have,p);return}
+ }
+ state.money+=p;state.revenue+=p;state.shiftRevenue+=p;state.served++;state.shiftServed++;state.combo++;state.rating=Math.min(100,state.rating+(state.combo%5===0?2:1));
+ let msg=state.combo===3?'Đang vào guồng rồi đó!':state.combo===5?'Chủ quán hôm nay làm việc năng suất ghê!':state.combo===10?'Không nghỉ luôn à?':state.combo===20?'Hôm nay đúng chất ông/bà chủ!':state.combo===30?'Máy kiếm tiền đã được kích hoạt!':`+${moneyFmt(p)}`;
+ toast(msg);
+ state.customer=null;state.step=0;state.stepUsed=[];state.recipe=recipeFor(state.group);state.nextCustomer=Date.now()+3500+Math.random()*6500;renderSell();
+}
+function insufficient(have,p){
+ const short=p-have;document.getElementById('modal').innerHTML=`<div class="modal"><div class="modalbox"><h2>💸 Khách không đủ tiền</h2><div class="card"><b>${state.customer.name}</b><br>Đơn: ${state.recipe[0]}<br>Giá: <b>${moneyFmt(p)}</b><br>Khách có: <b>${moneyFmt(have)}</b><br>Thiếu: <b>${moneyFmt(short)}</b></div>
+ <div class="choice"><button class="btn" onclick="partialPay(${have})">💵 Nhận tiền hiện có</button><button class="btn blue" onclick="debt(${short})">🤝 Cho thiếu ${moneyFmt(short)}</button><button class="btn red" onclick="refuseSale()">❌ Không bán</button></div></div></div>`;
+}
+function closeModal(){document.getElementById('modal').innerHTML=''}
+function partialPay(have){state.money+=have;state.revenue+=have;state.shiftRevenue+=have;state.served++;state.shiftServed++;state.customer=null;state.recipe=recipeFor(state.group);state.step=0;state.stepUsed=[];state.nextCustomer=Date.now()+5000;closeModal();toast('Nhận khoản khách đang có.');renderSell()}
+function debt(amount){state.ordersDebt.push({name:state.customer.name,amount,day:state.day,status:'chưa trả'});state.money+=state.customer.price-amount;state.revenue+=state.customer.price-amount;state.shiftRevenue+=state.customer.price-amount;state.served++;state.shiftServed++;state.customer=null;state.recipe=recipeFor(state.group);state.step=0;state.stepUsed=[];state.nextCustomer=Date.now()+5000;closeModal();toast('Đã ghi vào sổ công nợ.');renderSell()}
+function refuseSale(){state.rating=Math.max(0,state.rating-1);state.customer=null;state.recipe=recipeFor(state.group);state.step=0;state.stepUsed=[];state.nextCustomer=Date.now()+5000;closeModal();toast('Đã từ chối đơn.');renderSell()}
+function market(){
+ state.scene='market';state.selectedMarket={};state.marketGroup=null;const cats=[['bread','🥖 Bánh mì'],['xoi','🍚 Xôi'],['coffee','☕ Cà phê'],['hutieu','🍜 Hủ tiếu']];
+ document.getElementById('screen').innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>🛒 Đi chợ</h2><div class="card">Giá nguyên liệu có thể thay đổi mỗi ngày. Bạn tự chọn số lượng mua.</div><div class="grid2">${cats.map(c=>`<button class="btn" onclick="marketCat('${c[0]}')">${c[1]}</button>`).join('')}</div>`;
+}
+function marketCat(g){
+ state.marketGroup=g;
+ const items=groupIngredients[g];state.scene='marketcat';document.getElementById('screen').innerHTML=`<button class="back" onclick="market()">← Chọn nhóm khác</button><h2>🛒 Chợ · ${groups[g].name}</h2><div class="card">Tiền: <b>${moneyFmt(state.money)}</b><br>Chọn số lượng, rồi bấm mua.</div>
+ <div class="card">${items.map(k=>{let q=state.selectedMarket[k]||0;let price=Math.round(prices[k]*(.85+Math.random()*.3));state.selectedMarket[k+'_price']=price;return `<div class="list-row"><div><b>${ingredientInfo[k][0]}</b><br><span class="small">Kho ${state.inventory[k]||0} · ${moneyFmt(price)}/đv</span></div><div class="qty"><button onclick="changeBuy('${k}',-1)">−</button><b id="q_${k}">${q}</b><button onclick="changeBuy('${k}',1)">+</button></div><b class="price">${moneyFmt(price*q)}</b></div>`}).join('')}
+ <div style="padding-top:10px;font-weight:1000">Tổng: ${moneyFmt(marketTotal(items))}</div><button class="btn primary" style="margin-top:8px" onclick="buySelected()">🛍️ Mua số lượng đã chọn</button></div>`;
+}
+function marketTotal(items){return items.reduce((s,k)=>s+(state.selectedMarket[k]||0)*(state.selectedMarket[k+'_price']||prices[k]),0)}
+function changeBuy(k,d){state.selectedMarket[k]=Math.max(0,Math.min(99,(state.selectedMarket[k]||0)+d));const el=document.getElementById('q_'+k);if(el)el.textContent=state.selectedMarket[k];}
+function buySelected(){const items=groupIngredients[state.marketGroup||state.group||'bread'];let total=marketTotal(items);if(!total){toast('Chưa chọn số lượng.');return}if(total>state.money){toast('Không đủ tiền.');return}items.forEach(k=>{let q=state.selectedMarket[k]||0;state.inventory[k]=(state.inventory[k]||0)+q;state.selectedMarket[k]=0});state.money-=total;toast('Đã nhập hàng.');market()}
+function inventory(){state.scene='inventory';document.getElementById('screen').innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>📦 Kho hàng</h2><div class="card">${Object.entries(state.inventory).filter(([k,v])=>v>0).map(([k,v])=>`<span class="pill">${ingredientInfo[k]?.[0]||k}: ${v}</span>`).join(' ')}</div>`}
+function assets(){
+ state.scene='assets';let c=cartAssets[state.assets.cart-1],v=vehicleAssets[state.assets.vehicle],p=propertyAssets[state.assets.property];
+ document.getElementById('screen').innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>🏪 Tài sản</h2>
+ <div class="asset-card"><b>🚚 Xe hàng · Cấp ${c.level}</b><div class="meta">${c.n}<br>Dung lượng: ${c.cap} · Tốc độ phục vụ +${c.speed}</div>${state.assets.cart<cartAssets.length?`<button class="btn primary" onclick="buyCart()">Nâng cấp · ${moneyFmt(cartAssets[state.assets.cart].cost)}</button>`:'<span class="pill">Đã đạt cấp tối đa</span>'}</div>
+ <div class="asset-card"><b>🛵 Phương tiện</b><div class="meta">${v.n}<br>Bonus vận chuyển +${v.bonus}</div>${state.assets.vehicle<vehicleAssets.length-1?`<button class="btn" onclick="buyVehicle()">Mua ${vehicleAssets[state.assets.vehicle+1].n} · ${moneyFmt(vehicleAssets[state.assets.vehicle+1].cost)}</button>`:''}</div>
+ <div class="asset-card"><b>🏠 Bất động sản</b><div class="meta">${p.n}<br>Thu nhập thụ động: ${moneyFmt(p.passive)}/ngày</div>${state.assets.property<propertyAssets.length-1?`<button class="btn" onclick="buyProperty()">Mua ${propertyAssets[state.assets.property+1].n} · ${moneyFmt(propertyAssets[state.assets.property+1].cost)}</button>`:''}</div>
+ <div class="asset-card"><b>💼 Kinh doanh thụ động</b><div class="meta">Tài sản bất động sản sẽ tạo doanh thu khi bạn nghỉ qua ngày, đồng thời có chi phí vận hành.</div></div>`;
+}
+function buyCart(){let a=cartAssets[state.assets.cart];if(state.money<a.cost){toast('Không đủ tiền.');return}state.money-=a.cost;state.assets.cart++;toast('Xe hàng đã nâng cấp!');assets()}
+function buyVehicle(){let a=vehicleAssets[state.assets.vehicle+1];if(state.money<a.cost){toast('Không đủ tiền.');return}state.money-=a.cost;state.assets.vehicle++;toast('Đã mua phương tiện.');assets()}
+function buyProperty(){let a=propertyAssets[state.assets.property+1];if(state.money<a.cost){toast('Không đủ tiền.');return}state.money-=a.cost;state.assets.property++;state.assets.passive=a.passive;toast('Đã mua bất động sản.');assets()}
+function ledger(){state.scene='ledger';document.getElementById('screen').innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>📒 Sổ công nợ</h2><div class="card">${state.ordersDebt.length?state.ordersDebt.map((d,i)=>`<div class="list-row"><div><b>${d.name}</b><br><span class="small">Ngày ${d.day} · ${d.status}</span></div><b>${moneyFmt(d.amount)}</b><button class="btn" onclick="collectDebt(${i})">Thu</button></div>`).join(''):'Chưa có khoản nợ.'}</div>`}
+function collectDebt(i){let d=state.ordersDebt[i];state.money+=d.amount;state.ordersDebt.splice(i,1);toast('Đã thu công nợ.');ledger()}
+function loans(){state.scene='loans';document.getElementById('screen').innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>💰 Vay vốn</h2>
+ <div class="card"><b>🏦 Ngân hàng</b><br>Vay 15.000.000đ · phí 8% · trả sau 3 ngày<br><button class="btn primary" onclick="takeLoan('Ngân hàng',15000000,.08,3)">Vay ngay</button></div>
+ <div class="card"><b>🤝 Bạn bè</b><br>Vay 5.000.000đ · phí 3% · trả sau 2 ngày<br><button class="btn" onclick="takeLoan('Bạn bè',5000000,.03,2)">Vay ngay</button></div>
+ <div class="card"><b>🧾 Khoản vay đang có</b>${state.loans.length?state.loans.map((l,i)=>`<div class="list-row"><div>${l.name}<br><span class="small">Đến hạn ngày ${l.due}</span></div><b>${moneyFmt(l.dueAmount)}</b><button class="btn" onclick="repayLoan(${i})">Trả</button></div>`).join(''):'<br><span class="muted">Không có khoản vay.</span>'}</div>`}
+function takeLoan(name,amount,fee,days){state.money+=amount;state.loans.push({name,amount,due:state.day+days,dueAmount:Math.round(amount*(1+fee))});toast('Đã nhận khoản vay.');loans()}
+function repayLoan(i){let l=state.loans[i];if(state.money<l.dueAmount){toast('Chưa đủ tiền trả.');return}state.money-=l.dueAmount;state.loans.splice(i,1);toast('Đã trả khoản vay.');loans()}
+function business(){state.scene='business';document.getElementById('screen').innerHTML=`<button class="back" onclick="home()">← Về nhà</button><h2>📈 Kinh doanh</h2><div class="card"><b>Doanh thu hôm nay:</b> ${moneyFmt(state.shiftRevenue)}<br><b>Đã phục vụ:</b> ${state.shiftServed}<br><b>Uy tín:</b> ${state.rating}/100<br><b>Tiền mặt:</b> ${moneyFmt(state.money)}</div><div class="card"><b>Chi phí & dòng tiền</b><br>Nguyên liệu đã dùng: ${moneyFmt(state.ingredientCost)}<br>Hao hụt: ${moneyFmt(state.waste)}<br>Chi phí cố định dự kiến cuối ngày: 130.000đ</div>`}
+function rest(){
+ state.restCount++;state.combo=0;state.customer=null;
+ const jokes=['Lại nghỉ nữa? Xe hàng tự bán hay gì?','Khách đang đứng chờ… còn chủ quán đang nằm.','Ngày hôm nay bạn đã làm việc rất chăm chỉ… trong tưởng tượng.','Tốc độ kiếm tiền: 0%. Tốc độ nghỉ: 100%.','Bạn đang kinh doanh hay đang mở dịch vụ nghỉ dưỡng?'];
+ if(state.time>=1110||state.restCount%1===0){
+  const passive=propertyAssets[state.assets.property].passive;const fixed=130000;const loanDue=state.loans.filter(l=>l.due<=state.day+1).reduce((s,l)=>s+l.dueAmount,0);
+  const before=state.money;state.money+=passive-fixed;
+  if(state.time>=1110){state.day++;state.time=360;state.restCount=0;state.shiftRevenue=0;state.shiftServed=0;state.ingredientCost=0;state.waste=0;state.loans.forEach(l=>{if(l.due<state.day)l.due=state.day});}
+  else state.time=Math.min(1110,state.time+180);
+  state.scene='summary';
+  document.getElementById('screen').innerHTML=`<h2>🌙 Nghỉ ngơi</h2><div class="card"><b>${state.day>1?'Sang ngày mới!':'Bạn nghỉ một ca.'}</b><br>${jokes[(state.day+state.restCount)%jokes.length]}<br><br>Thu nhập thụ động: +${moneyFmt(passive)}<br>Chi phí vận hành: -${moneyFmt(fixed)}<br><b>Tiền hiện tại: ${moneyFmt(state.money)}</b></div><button class="btn primary" onclick="home()">🏠 Về nhà</button>`;
+ }else home();
+}
+function tick(){
+ if(!state.clockStarted){state.clockStarted=true;return}
+ if(state.scene==='sell'){
+  if(state.time<1320){state.time++;if(state.time===630||state.time===870||state.time===1110)toast('Thời gian đã chuyển sang '+phase());}
+  if(!state.customer)spawnCustomer();
+  if(state.time>=1320){state.customer=null;toast('Đã hết giờ bán. Về nhà và nghỉ để sang ca/ngày tiếp theo.');home()}
+ } else {
+  // Clock is visible but only advances in selling; home does not advance time.
+ }
+ updateHud();
+}
+function updateHud(){const h=document.querySelector('.hud');if(h)h.outerHTML=renderHud()}
+setInterval(tick,1000);
+render();
+</script>
+</body>
+</html>
