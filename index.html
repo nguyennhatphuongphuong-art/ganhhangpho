@@ -53,6 +53,58 @@ background:linear-gradient(#9ed9ef 0 42%,#eab176 42% 57%,#777 57% 100%)}
 .small{font-size:12px}.good{color:#4b7b39}.bad{color:#b73c32}.money{font-size:22px;font-weight:1000}
 .asset-card{background:#fff;border:2px solid var(--line);border-radius:15px;padding:11px;margin:8px 0}.asset-card b{font-size:17px}.asset-card .meta{font-size:12px;color:#6f6253;margin:4px 0 8px}
 @media(min-width:700px){.ingredient-grid{grid-template-columns:repeat(7,1fr)}}
+
+/* ===== GÁNH HÀNG PHỐ V5 — 2D ART LAYER ===== */
+body{background:#17201b}
+#app{background:#f4e4c5}
+.hud{background:#f8efd9;border-bottom:3px solid #7c4b2b;box-shadow:0 3px 0 #d5b488}
+.stat{background:#fffaf0;border-color:#c99a63;box-shadow:0 2px 0 #d9b987}
+.card{background:#fff8e8;border-color:#c99a63;box-shadow:0 3px 0 #d7b77f}
+.btn{background:#fffaf0;border-color:#bd8b55;box-shadow:0 2px 0 #d1aa77}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn.primary{background:#e6a04b;border-color:#71421f;box-shadow:0 3px 0 #8c572b}
+.street{height:365px;border:4px solid #5d381f;
+ background:
+ linear-gradient(#9ed7df 0 38%,#d9a86c 38% 48%,#8b8a79 48% 100%);
+ box-shadow:inset 0 -35px 0 #696966}
+.street:after{content:"";position:absolute;left:0;right:0;bottom:25px;height:5px;
+ background:#d5c08c;box-shadow:0 -28px 0 #74746f;opacity:.9}
+.street-label{background:#fff0bd;border:3px solid #69401f;border-radius:12px;padding:6px 9px;
+ font-size:16px;box-shadow:0 3px 0 #a66f3d}
+.sun{background:#ffd86b;border:3px solid #d89b3d}
+.tree:before{background:#694323}.tree:after{background:#4e8748;box-shadow:12px 14px 0 #609a50,-10px 18px 0 #41783f}
+.lamp{background:#4b3a31}.lamp:before{background:#fff1ad;border:2px solid #8d6a42}
+.cart{width:270px;height:135px;bottom:70px;background:#b86c32;border:6px solid #61391e;
+ box-shadow:inset 0 8px 0 #d9954f,0 9px 0 #5a514a}
+.cart:before{content:"GÁNH HÀNG PHỐ";top:-61px;width:205px;background:#f5d287;border:5px solid #61391e;
+ box-shadow:0 4px 0 #a36b39;font-size:18px;letter-spacing:.5px}
+.cart:after{width:34px;height:34px;bottom:-33px;left:17px;background:#282828;
+ box-shadow:188px 0 0 #282828;border:3px solid #161616}
+.customer{right:13px;bottom:75px;width:100px}
+.avatar{width:78px;height:95px;border:4px solid #52301d;background:#e8ad76;box-shadow:inset 0 12px 0 #f2bf88}
+.avatar:before{top:7px;left:8px;width:53px;height:31px;background:#2c211c;border-radius:28px 28px 12px 12px}
+.avatar:after{content:"•  •";top:41px;left:14px}
+.bubble{right:82px;bottom:165px;background:#fffdf7;border:3px solid #563522;box-shadow:0 4px 0 #c29d73}
+.kitchen{background:#e7cfaa;border-color:#79502d;box-shadow:inset 0 3px 0 #f7e7c7}
+.station{background:#a96836;border-color:#61391e;box-shadow:inset 0 5px 0 #d28d50}
+.station h3{color:#fff6dc;text-shadow:0 1px #4a2a18}
+.board{background:
+ repeating-linear-gradient(0deg,#bd8049 0,#bd8049 9px,#c98c52 10px,#c98c52 12px);
+ border-color:#70441f;box-shadow:inset 0 0 0 4px #d79a60,0 3px 0 #70441f}
+.plate{background:#fffaf0;border-color:#9d8a72;box-shadow:inset 0 0 0 5px #e5d5b9}
+.mini{background:#fff9ea;border-color:#9f7448;box-shadow:0 2px 0 #70451f}
+.ingredient-grid{background:#d3b17e;border:3px solid #8a5d34;border-radius:15px;padding:7px}
+.ing{background:#fff9ed;border-color:#b9844b;box-shadow:0 2px 0 #9a6739;min-height:82px}
+.ing svg{width:48px;height:44px}
+.section-title{color:#59351e}
+.order{background:#fff9eb;border-color:#bd8b55}
+.tag{background:#f0d8aa;border:1px solid #d0a76a}
+.progress{background:#cbb89d;border:2px solid #876444}
+.progress>i{background:#5b8b48}
+.asset-card{background:#fff9ed;border-color:#bd8b55}
+.list-row{border-bottom-color:#d5b98d}
+.pill{background:#ead0a0;border:1px solid #c59b60}
+
 </style>
 </head>
 <body>
@@ -203,7 +255,7 @@ function render(){
 function home(){
  state.scene='home';
  document.getElementById('screen').innerHTML=`
- <h1 class="title">🏠 Nhà</h1>
+ <h1 class="title">🏠 Nhà <span class="pill">V5 · 2D</span></h1>
  <div class="card"><b>${phase()}</b> · Ngày ${state.day} · ${clock()}<br><span class="muted">Chỉ 🛌 Nghỉ ngơi mới chuyển ca/ngày.</span></div>
  <div class="grid2">
   <button class="btn primary" onclick="chooseLocation()">🚚 Đi bán hàng</button>
@@ -243,15 +295,24 @@ function renderSell(){
  const buttons=groupIngredients[state.group].map(k=>{let info=ingredientInfo[k];let stock=state.inventory[k]||0;return `<button class="ing ${stock<=0?'disabled':''}" ${stock>0?`onclick="addIngredient('${k}')"`:'disabled'}>${icon(k)}${info[0]}<br><span class="small">Kho ${stock}</span></button>`}).join('');
  s.innerHTML=`<button class="back" onclick="home()">← Về nhà (không đổi giờ)</button>
  <div class="street"><div class="sun"></div><div class="street-label">${loc[1]} ${loc[2]}</div><div class="tree t1"></div><div class="tree t2"></div><div class="lamp"></div>
- ${bubble}<div class="cart"></div><div class="customer"><div class="avatar"></div>${active?active.name:'...'}</div></div>
+ ${bubble}<div class="cart">
+  <div style="position:absolute;left:18px;top:24px;width:45px;height:45px;border-radius:50%;background:#f4d39a;border:4px solid #70401f"></div>
+  <div style="position:absolute;left:75px;top:23px;width:76px;height:48px;background:#7e4827;border:4px solid #5b321c;border-radius:10px"></div>
+  <div style="position:absolute;right:18px;top:26px;width:45px;height:38px;background:#e9c789;border:4px solid #70401f;border-radius:8px"></div>
+  <div style="position:absolute;left:20px;right:20px;bottom:10px;height:6px;background:#75421f;border-radius:4px"></div>
+</div>
+<div class="customer">
+  <div class="avatar"></div>
+  <div>${active?active.name:'...'}</div>
+</div></div>
  <div class="order"><b>📋 Đơn: ${r[0]}</b><div class="recipe">${r[1].map((k,i)=>`<span class="tag">${i<state.step?'✓ ':''}${ingredientInfo[k][0]}</span>`).join('')}</div>
  <div class="progress"><i style="width:${Math.round(state.step/r[1].length*100)}%"></i></div><span class="small">${status}</span></div>
  <div class="kitchen">
   <div class="worktop">
    <div class="station"><h3>🪵 THỚT SƠ CHẾ</h3><div class="board"><div class="ingredient-stack">${used.map(k=>`<div class="mini">${icon(k)}</div>`).join('')}</div></div></div>
-   <div class="station"><h3>${state.group==='coffee'?'☕ KHU PHA CHẾ':state.group==='hutieu'?'🍲 NỒI HỦ TIẾU':'🍳 BẾP / NỒI'}</h3><div class="plate"><div class="result-food">${state.step===r[1].length?icon(state.group==='bread'?'bread':r[1][0]):'<span class="muted small">Thành phẩm sẽ hiện ở đây</span>'}</div></div></div>
+   <div class="station"><h3>${state.group==='coffee'?'☕ KHU PHA CHẾ':state.group==='hutieu'?'🍲 NỒI HỦ TIẾU':'🍳 BẾP / NỒI'}</h3><div class="plate"><div class="result-food">${state.step===r[1].length?icon(state.group==='bread'?'bread':r[1][0]):'<div style="font-size:34px">🍽️</div><span class="muted small">Thành phẩm sẽ hiện ở đây</span>'}</div></div></div>
   </div>
-  <div class="section-title">🥣 Nguyên liệu của ${groups[state.group].name}</div>
+  <div class="section-title">🥣 Nguyên liệu của ${groups[state.group].name} <span class="pill">Bấm để thao tác</span></div>
   <div class="ingredient-grid">${buttons}</div>
   <div class="actions"><button class="btn" onclick="resetDish()">↩ Làm lại</button><button class="btn primary" onclick="serve()">🍽️ Phục vụ</button><button class="btn" onclick="home()">🏠 Về nhà</button></div>
   <div class="small muted" style="margin-top:7px">Bấm đúng thứ tự công thức. Bấm sai sẽ hủy món và hao nguyên liệu đã dùng.</div>
